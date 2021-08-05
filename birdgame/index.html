@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<htmL>
+    <head>
+        <style>
+            .hide{
+                display: none;
+            }
+            .score{
+                background-color:black;
+                position:absolute;
+                width:auto;
+                               
+                vertical-align: middle;
+                box-shadow: salmon;
+                box-shadow: blanchedalmond;
+                 height:750px;
+                z-index: 1;
+                font-size: 1.5em;
+                font-family: fantasy;
+                text-align: center;
+                color: red;
+            }
+           .gamearea{
+               background-color:skyblue;
+               width:100%;
+               height:750px;
+               
+           }
+           .startscreen{
+               position:absolute;
+               background-color:greenyellow;
+               color: black;
+               left:45%;
+               top:25%;
+               text-align: center;
+               
+               
+               width:auto;
+               padding: 15px;
+               border: 1px solid black;
+               border-radius: 200px;
+
+         }
+         .pipe{
+             width: 100px;
+             position:absolute;
+             text-align: center;
+
+         }
+         .gamemessage{
+             position: absolute;
+             z-index: 100;
+        
+             top: 10%;
+             text-align: center;
+             left: 20%;
+             width: 60%;
+             background-color: greenyellow;
+             font-size: 2em;
+             border-radius:1000px;
+         }
+         .bird{
+             position: absolute;
+             bottom:100px;
+             top:8px;
+             left:50px;
+             width:80px;
+             height: 50px;
+             line-height:40px ;
+             font-size: 1.5em;
+             background-image:url(https://marketingmavens.co.uk/wp-content/uploads/2019/05/Mavens_eyes-animation.gif);
+             background-size: cover;
+
+         }
+         .wing{
+             position: absolute;
+             top:0px;
+             left:0px;
+             background-color:gold;
+             width: 25px;
+             height: 12px;
+             border-radius: 5px;
+         }
+        </style>
+
+    </head>
+    <body><div class="score"></div>
+        <div class="game">
+            <div class="startscreen">press start</div>
+            <span class="gamemessage"></span>
+            <div class="gamearea ">
+            </div>
+            
+        </div>
+        <script>
+            const score=document.querySelector(".score");
+            const startscreen=document.querySelector(".startscreen");
+            const gamearea=document.querySelector(".gamearea");
+            const gamemessage=document.querySelector(".gamemessage");
+            let keys={};
+            player={speed:4};
+            
+
+           startscreen.addEventListener("click",start);
+           gamemessage.addEventListener("click",start);
+              document.addEventListener("keydown",presson);
+              document.addEventListener("keyup",pressoff);
+                        function start(){
+                             gamearea.innerHTML="";
+                            startscreen.classList.add("hide");
+                            gamemessage.classList.add("hide");
+                            player.score=0;
+                            player.inplay=true;
+                            
+                           let bird=document.createElement("div");
+                           let wing=document.createElement("span");
+                           let image=document.createElement("img");
+                              bird.setAttribute("class","bird");
+                              wing.setAttribute("class","wing");
+                              wing.pos=0;
+                              wing.style.top=wing.pos+"px";
+                              bird.appendChild(wing);
+                              gamearea.appendChild(bird);
+
+                            
+                             player.y=bird.offsetTop;
+                             player.x=bird.offsetLeft;
+                               player.pipe=0;
+                               let spacing=300;
+                               let howmany=Math.floor((gamearea.offsetWidth)/spacing);
+                               console.log(howmany);
+                               for(let x=0;x<howmany;x++){
+                                   buildpipes(player.pipe*spacing);
+                               }
+
+                             window.requestAnimationFrame(playgame);
+                        }
+                        function buildpipes(startpos){
+                            let totalHeight=gamearea.offsetHeight;
+                            let totalwidth=gamearea.offsetWidth;
+                            player.pipe++;
+                            let pipecolor=clr();
+                            let pipe1=document.createElement("div");
+                            pipe1.start=startpos+totalwidth-200;
+                            pipe1.classList.add("pipe");
+                            pipe1.innerHTML="<br>"+player.pipe;
+                            pipe1.height=Math.floor(Math.random()*350);
+                            pipe1.style.height=pipe1.height+"px";
+                            pipe1.style.left=pipe1.start+"px";
+
+                            pipe1.style.top="0px";
+                            pipe1.x=pipe1.start;
+                            pipe1.style.backgroundColor=pipecolor;
+                            gamearea.appendChild(pipe1);
+                            let pipespace=Math.floor(Math.random()*250)+150;
+                            let pipe2=document.createElement("div");
+                            pipe2.start=pipe1.start;
+                            pipe2.classList.add("pipe");
+                            pipe2.innerHTML="<br>"+player.pipe;
+                            pipe2.style.height=totalHeight-pipe1.height-pipespace+"px"
+                            pipe2.style.bottom="0px";
+                            pipe2.style.left=pipe1.start+"px";
+                            pipe2.x=pipe1.start;
+                            pipe2.style.backgroundColor=pipecolor;
+                            gamearea.appendChild(pipe2);
+                            
+
+                        }
+                        function clr(){
+                            return "#"+Math.random().toString(16).substr(-6);
+                        }
+
+
+                             function playgame(){
+                                if(player.inplay){
+                                let bird=document.querySelector(".bird");
+                                let wing=document.querySelector(".wing");
+                                movepipe(bird);
+                                
+                                  let move=false;
+                                  
+                                  if(keys.ArrowUp && player.y>0){player.y-=(player.speed*5)
+                                                      move=true;
+                                                
+                                                      
+                               }
+                                  if(keys.ArrowDown && player.y<gamearea.offsetHeight-50){player.y+=player.speed;
+                                                   move=true;    }
+                                     
+                                  if(keys.ArrowLeft && player.x>0){player.x-=player.speed;
+                                                     move=true;   }
+                                 if(keys.ArrowRight && player.x<gamearea.offsetWidth-50){player.x+=player.speed;
+                                                        move=true;  }
+                                                 
+                                  bird.style.top=player.y+"px";
+                                  bird.style.left=player.x+"px";
+                                  if(move){
+                                      wing.pos=(wing.pos==0)?25:0;
+                                      wing.style.top=wing.pos+"px";
+
+                                  }
+                                  if(player.y>gamearea.offsetHeight){
+                                      console.log("gameover");
+                                      gameover(bird);
+                                  }
+                                  player.y+=(player.speed*1.4);
+                                  player.score++;
+                                  score.innerText="score:"+player.score;
+                                  window.requestAnimationFrame(playgame);
+                                  
+                                }
+                                function movepipe(bird){
+                                    let lines=document.querySelectorAll(".pipe");
+                                    console.log(lines);
+                                    let counter=0;//counts pipes to remove
+                                    lines.forEach(function(item){
+                                        item.x-=player.speed;
+                                        item.style.left=item.x+"px";
+                                        if(item.x<0){
+                                            item.parentElement.removeChild(item);
+                                            counter++;
+                                        }
+                                        if(iscollide(item,bird)){
+                                            console.log("crash");
+                                            gameover(bird);
+                                        }
+                                    })
+                                    counter=counter/2;
+                                    for(let x=0;x<counter;x++){
+                                        buildpipes(0);
+                                    }
+
+                                }
+                                function iscollide(a,b){
+                                    let arect=a.getBoundingClientRect();
+                                    let brect=b.getBoundingClientRect();
+                                    return !((arect.top>brect.bottom)||(arect.bottom<brect.top)||
+                                    (arect.right<brect.left)||(arect.left>brect.right)
+                                    )
+
+
+                                }
+                                
+                             }
+
+                             function gameover(bird){
+                                 player.inplay=false;
+                                 gamemessage.classList.remove("hide");
+                                 bird.setAttribute("style","transform:rotate(180deg)");
+                                 gamemessage.innerHTML="GAME OVER<br> YOU SCORED"+player.score+"<br>click HERE to start again";
+
+                             }
+                        
+                        function presson(e){
+                            e.preventDefault();
+                           keys[e.code]=true;
+                               console.log(keys);
+                        }
+                        function pressoff(e){
+                            e.preventDefault();
+                           keys[e.code]=false;
+                           console.log(keys);
+                        }
+                        
+
+        </script>
+    </body>
+</htmL>
